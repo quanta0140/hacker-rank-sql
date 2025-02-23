@@ -20,3 +20,40 @@ WHERE(
 --in checks if value exists in list the result includes all the rows with thosevalues
       END
     );
+
+
+--3)You are given two tables: Students and Grades. Students contains three columns ID, Name and Marks.
+--Ketty gives Eve a task to generate a report containing three columns: Name, Grade and Mark.
+--Ketty doesn't want the NAMES of those students who received a grade lower than 8. The report must be in descending order by grade 
+
+SELECT 
+CASE
+WHEN GRADES.GRADE<8 THEN NULL
+ELSE STUDENTS.NAME
+END AS NAME,GRADES.GRADE,STUDENTS.MARKS
+FROM STUDENTS JOIN GRADES
+ON STUDENTS.MARKS BETWEEN GRADES.MIN_MARK AND GRADES.MAX_MARK 
+ORDER BY GRADES.GRADE DESC,STUDENTS.NAME ASC,STUDENTS.MARKS DESC
+--CASE in WHERE must return a boolean condition (TRUE or FALSE), not a value.
+--If you want to remove rows, use WHERE GRADES.GRADE >= 8.
+--If you want to modify output values, use CASE inside SELECT.
+
+4)TOP COMPANIES
+---- hacker_id and name of hackers who achieved full scores for more than one challenge
+--desc no.of chalenges,asc hacker id
+--hackers,difficulty,challenges,submissions
+SELECT HACKER_ID, NAME
+FROM (
+    SELECT 
+        S.HACKER_ID,
+        H.NAME,
+        COUNT(S.HACKER_ID) AS SUB_COUNT
+    FROM SUBMISSIONS S
+    JOIN HACKERS H ON S.HACKER_ID = H.HACKER_ID
+    JOIN CHALLENGES C ON S.CHALLENGE_ID = C.CHALLENGE_ID
+    JOIN DIFFICULTY D ON C.DIFFICULTY_LEVEL = D.DIFFICULTY_LEVEL 
+    WHERE S.SCORE = D.SCORE
+    GROUP BY S.HACKER_ID, H.NAME
+    HAVING COUNT(S.HACKER_ID) > 1
+) AS Ranked_Hackers
+ORDER BY SUB_COUNT DESC, HACKER_ID ASC;
